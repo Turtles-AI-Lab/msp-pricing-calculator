@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free MSP pricing calculator. Calculate managed services pricing, profit margins, and compare pricing models.">
+    <meta name="keywords" content="MSP pricing, managed services calculator, IT services pricing, per device pricing, per user pricing">
+    <title>MSP Pricing Calculator | Managed Services Pricing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #f6ad55;
+            --danger: #fc8181;
+            --dark: #1a202c;
+            --gray: #4a5568;
+            --light: #f7fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-with-unit {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-with-unit input {
+            flex: 1;
+        }
+
+        .unit {
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .pricing-model-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .model-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .model-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .results {
+            background: linear-gradient(135deg, var(--success) 0%, #38a169 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+        }
+
+        .results h2 {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .comparison-table {
+            background: white;
+            color: var(--dark);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .tip-box {
+            background: #fef5e7;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid,
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💼 MSP Pricing Calculator</h1>
+        <p>Calculate managed services pricing & profit margins</p>
+    </header>
+
+    <div class="container">
+        <div class="pricing-model-selector">
+            <button class="model-btn active" onclick="selectModel('perDevice')">Per Device</button>
+            <button class="model-btn" onclick="selectModel('perUser')">Per User</button>
+            <button class="model-btn" onclick="selectModel('flatRate')">Flat Rate</button>
+        </div>
+
+        <div class="calculator-grid">
+            <!-- Input Section -->
+            <div class="card">
+                <h2>📊 Service Parameters</h2>
+
+                <div class="form-group" id="deviceGroup">
+                    <label for="deviceCount">Number of Devices/Users</label>
+                    <input type="number" id="deviceCount" min="1" value="50" step="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="basePrice">Base Price per Device/User/Month</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="number" id="basePrice" min="1" value="125" step="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="techTime">Tech Time per Device/Month</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="techTime" min="0" value="2" step="0.5">
+                        <span class="unit">hours</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="techRate">Technician Hourly Rate</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="number" id="techRate" min="1" value="50" step="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="toolsCost">Tools/Software Cost per Device</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="number" id="toolsCost" min="0" value="15" step="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="overhead">Overhead & Admin Cost</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="overhead" min="0" max="100" value="20" step="5">
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 Industry Averages:</strong><br>
+                    Per Device: $100-$150/month<br>
+                    Per User: $75-$125/month<br>
+                    Target Margin: 30-50%
+                </div>
+            </div>
+
+            <!-- Breakdown Section -->
+            <div class="card">
+                <h2>💰 Cost Breakdown</h2>
+
+                <div class="form-group">
+                    <label>Labor Cost per Device</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="text" id="laborCost" readonly value="100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tools/Software Cost</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="text" id="toolsCostDisplay" readonly value="15">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Overhead Cost</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="text" id="overheadCost" readonly value="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--primary);">Total Cost per Device</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="text" id="totalCost" readonly value="135" style="font-weight: bold; font-size: 1.2rem;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--success);">Profit per Device</label>
+                    <div class="input-with-unit">
+                        <span class="unit">$</span>
+                        <input type="text" id="profitPerDevice" readonly value="0" style="font-weight: bold; font-size: 1.2rem; color: var(--success);">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 1.2rem; color: var(--success);">Profit Margin</label>
+                    <div class="input-with-unit">
+                        <input type="text" id="profitMargin" readonly value="0%" style="font-weight: bold; font-size: 1.2rem; color: var(--success);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results">
+            <h2>📈 Monthly Revenue Analysis</h2>
+
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-value" id="monthlyRevenue">$0</div>
+                    <div class="result-label">Monthly Revenue</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value" id="monthlyCost">$0</div>
+                    <div class="result-label">Monthly Cost</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value" id="monthlyProfit">$0</div>
+                    <div class="result-label">Monthly Profit</div>
+                </div>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Monthly</th>
+                            <th>Quarterly</th>
+                            <th>Annual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Revenue</strong></td>
+                            <td id="revMonth">$0</td>
+                            <td id="revQuarter">$0</td>
+                            <td id="revYear">$0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costs</strong></td>
+                            <td id="costMonth">$0</td>
+                            <td id="costQuarter">$0</td>
+                            <td id="costYear">$0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Profit</strong></td>
+                            <td id="profitMonth">$0</td>
+                            <td id="profitQuarter">$0</td>
+                            <td id="profitYear">$0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Margin</strong></td>
+                            <td id="marginMonth">0%</td>
+                            <td id="marginQuarter">0%</td>
+                            <td id="marginYear">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <h2>💡 MSP Pricing Best Practices</h2>
+            <div class="tip-box">
+                <strong>Pricing Model Selection:</strong><br>
+                <strong>• Per Device:</strong> Best for mixed environments (workstations + servers)<br>
+                <strong>• Per User:</strong> Ideal for SaaS-heavy, BYOD environments<br>
+                <strong>• Flat Rate:</strong> Good for predictable, similar-sized clients
+            </div>
+            <div class="tip-box">
+                <strong>Target Profit Margins:</strong><br>
+                <strong>• Minimum:</strong> 30% (sustainable but tight)<br>
+                <strong>• Target:</strong> 40-50% (healthy MSP business)<br>
+                <strong>• Excellent:</strong> 50%+ (premium positioning)
+            </div>
+            <div class="tip-box">
+                <strong>Common Mistakes:</strong><br>
+                • Underestimating tech time required<br>
+                • Forgetting tool licensing costs<br>
+                • Not accounting for overhead<br>
+                • Racing to the bottom on price
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Built by <a href="https://turtles-ai-lab.github.io/Turtles-AI-Lab/" target="_blank" style="color: var(--primary);">Turtles AI Lab</a></strong></p>
+        <p style="margin-top: 10px;">
+            <a href="https://github.com/Turtles-AI-Lab/msp-pricing-calculator" style="color: var(--primary);">View on GitHub</a>
+        </p>
+    </footer>
+
+    <script>
+        let currentModel = 'perDevice';
+
+        function selectModel(model) {
+            currentModel = model;
+            document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update label text based on model
+            const label = model === 'flatRate' ? 'Number of Clients' :
+                         model === 'perUser' ? 'Number of Users' : 'Number of Devices';
+            document.querySelector('label[for="deviceCount"]').textContent = label;
+
+            const priceLabel = model === 'flatRate' ? 'Flat Rate per Client/Month' :
+                              model === 'perUser' ? 'Base Price per User/Month' : 'Base Price per Device/Month';
+            document.querySelector('label[for="basePrice"]').textContent = priceLabel;
+
+            // Adjust default values
+            if (model === 'flatRate') {
+                document.getElementById('deviceCount').value = 10;
+                document.getElementById('basePrice').value = 5000;
+            } else if (model === 'perUser') {
+                document.getElementById('deviceCount').value = 75;
+                document.getElementById('basePrice').value = 95;
+            } else {
+                document.getElementById('deviceCount').value = 50;
+                document.getElementById('basePrice').value = 125;
+            }
+
+            calculate();
+        }
+
+        function calculate() {
+            // Get inputs
+            const deviceCount = parseFloat(document.getElementById('deviceCount').value) || 0;
+            const basePrice = parseFloat(document.getElementById('basePrice').value) || 0;
+            const techTime = parseFloat(document.getElementById('techTime').value) || 0;
+            const techRate = parseFloat(document.getElementById('techRate').value) || 0;
+            const toolsCost = parseFloat(document.getElementById('toolsCost').value) || 0;
+            const overheadPct = parseFloat(document.getElementById('overhead').value) || 0;
+
+            // Calculate costs per device
+            const laborCost = techTime * techRate;
+            const directCost = laborCost + toolsCost;
+            const overheadCost = directCost * (overheadPct / 100);
+            const totalCost = directCost + overheadCost;
+
+            // Calculate profit
+            const profitPerDevice = basePrice - totalCost;
+            const profitMargin = basePrice > 0 ? (profitPerDevice / basePrice) * 100 : 0;
+
+            // Update breakdown
+            document.getElementById('laborCost').value = laborCost.toFixed(2);
+            document.getElementById('toolsCostDisplay').value = toolsCost.toFixed(2);
+            document.getElementById('overheadCost').value = overheadCost.toFixed(2);
+            document.getElementById('totalCost').value = totalCost.toFixed(2);
+            document.getElementById('profitPerDevice').value = profitPerDevice.toFixed(2);
+            document.getElementById('profitMargin').value = profitMargin.toFixed(1) + '%';
+
+            // Calculate totals
+            const monthlyRevenue = basePrice * deviceCount;
+            const monthlyCost = totalCost * deviceCount;
+            const monthlyProfit = monthlyRevenue - monthlyCost;
+
+            // Update main results
+            document.getElementById('monthlyRevenue').textContent = '$' + Math.round(monthlyRevenue).toLocaleString();
+            document.getElementById('monthlyCost').textContent = '$' + Math.round(monthlyCost).toLocaleString();
+            document.getElementById('monthlyProfit').textContent = '$' + Math.round(monthlyProfit).toLocaleString();
+
+            // Update comparison table
+            document.getElementById('revMonth').textContent = '$' + Math.round(monthlyRevenue).toLocaleString();
+            document.getElementById('revQuarter').textContent = '$' + Math.round(monthlyRevenue * 3).toLocaleString();
+            document.getElementById('revYear').textContent = '$' + Math.round(monthlyRevenue * 12).toLocaleString();
+
+            document.getElementById('costMonth').textContent = '$' + Math.round(monthlyCost).toLocaleString();
+            document.getElementById('costQuarter').textContent = '$' + Math.round(monthlyCost * 3).toLocaleString();
+            document.getElementById('costYear').textContent = '$' + Math.round(monthlyCost * 12).toLocaleString();
+
+            document.getElementById('profitMonth').textContent = '$' + Math.round(monthlyProfit).toLocaleString();
+            document.getElementById('profitQuarter').textContent = '$' + Math.round(monthlyProfit * 3).toLocaleString();
+            document.getElementById('profitYear').textContent = '$' + Math.round(monthlyProfit * 12).toLocaleString();
+
+            document.getElementById('marginMonth').textContent = profitMargin.toFixed(1) + '%';
+            document.getElementById('marginQuarter').textContent = profitMargin.toFixed(1) + '%';
+            document.getElementById('marginYear').textContent = profitMargin.toFixed(1) + '%';
+        }
+
+        // Add event listeners
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // Initial calculation
+        document.addEventListener('DOMContentLoaded', calculate);
+    </script>
+</body>
+</html>
