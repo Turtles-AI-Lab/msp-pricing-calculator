@@ -1,5 +1,13 @@
 # 💰 MSP Pricing Calculator
 
+
+![GitHub stars](https://img.shields.io/github/stars/Turtles-AI-Lab/msp-pricing-calculator?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Turtles-AI-Lab/msp-pricing-calculator?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Turtles-AI-Lab/msp-pricing-calculator)
+![GitHub license](https://img.shields.io/github/license/Turtles-AI-Lab/msp-pricing-calculator)
+![GitHub last commit](https://img.shields.io/github/last-commit/Turtles-AI-Lab/msp-pricing-calculator)
+
+
 Calculate and optimize MSP (Managed Service Provider) pricing models.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
